@@ -10,13 +10,10 @@ import android.content.*
 import android.content.Intent.ACTION_CALL
 import android.content.Intent.ACTION_DIAL
 import android.content.Intent.ACTION_VIEW
-import android.content.pm.PackageManager
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import android.media.AudioManager
 import android.net.Uri
 import android.os.*
-import android.provider.DocumentsContract
-import android.provider.MediaStore
 import android.text.InputType
 import android.text.TextWatcher
 import android.view.*
@@ -25,17 +22,13 @@ import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Observer
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
-import com.tutpro.baresip.Utils.showSnackBar
 import com.tutpro.baresip.databinding.ActivityMainBinding
 import java.io.File
 import kotlin.system.exitProcess
@@ -1164,188 +1157,6 @@ class MainActivity : AppCompatActivity() {
         val intent = pm.getLaunchIntentForPackage(this.packageName)
         this.startActivity(intent)
         exitProcess(0)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-
-        menuInflater.inflate(R.menu.main_menu, menu)
-
-        menuInflater.inflate(R.menu.rec_icon, menu)
-        recIcon = menu.findItem(R.id.recIcon)
-        if (BaresipService.isRecOn)
-            recIcon!!.setIcon(R.drawable.rec_on)
-        else
-            recIcon!!.setIcon(R.drawable.rec_off)
-
-        menuInflater.inflate(R.menu.mic_icon, menu)
-        micIcon = menu.findItem(R.id.micIcon)
-        if (BaresipService.isMicMuted)
-            micIcon!!.setIcon(R.drawable.mic_off)
-        else
-            micIcon!!.setIcon(R.drawable.mic_on)
-
-        menuInflater.inflate(R.menu.speaker_icon, menu)
-        speakerIcon = menu.findItem(R.id.speakerIcon)
-        if (Utils.isSpeakerPhoneOn(am))
-            speakerIcon!!.setIcon(R.drawable.speaker_on)
-        else
-            speakerIcon!!.setIcon(R.drawable.speaker_off)
-
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        when (item.itemId) {
-
-            R.id.recIcon -> {
-                if (Call.call("connected") == null) {
-                    BaresipService.isRecOn = !BaresipService.isRecOn
-                    if (BaresipService.isRecOn) {
-                        item.setIcon(R.drawable.rec_on)
-                        Api.module_load("sndfile")
-                    } else {
-                        item.setIcon(R.drawable.rec_off)
-                        Api.module_unload("sndfile")
-                    }
-                } else {
-                    Toast.makeText(
-                        applicationContext,
-                        R.string.rec_in_call,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-
-            R.id.micIcon -> {
-                if (Call.call("connected") != null) {
-                    BaresipService.isMicMuted = !BaresipService.isMicMuted
-                    if (BaresipService.isMicMuted) {
-                        item.setIcon(R.drawable.mic_off)
-                        Api.calls_mute(true)
-                    } else {
-                        item.setIcon(R.drawable.mic_on)
-                        Api.calls_mute(false)
-                    }
-                }
-            }
-
-            R.id.speakerIcon -> {
-                if (Build.VERSION.SDK_INT >= 31)
-                    Log.d(
-                        TAG, "Toggling speakerphone when dev/mode is " +
-                                "${am.communicationDevice!!.type}/${am.mode}"
-                    )
-                Utils.toggleSpeakerPhone(ContextCompat.getMainExecutor(this), am)
-                if (speakerIcon != null) {
-                    if (Utils.isSpeakerPhoneOn(am))
-                        speakerIcon!!.setIcon(R.drawable.speaker_on)
-                    else
-                        speakerIcon!!.setIcon(R.drawable.speaker_off)
-                }
-            }
-
-            R.id.backup -> {
-                when {
-                    Build.VERSION.SDK_INT >= 29 -> pickupFileFromDownloads("backup")
-                    ContextCompat.checkSelfPermission(
-                        this,
-                        WRITE_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED -> {
-                        Log.d(TAG, "Write External Storage permission granted")
-                        val path = Utils.downloadsPath("baresip.bs")
-                        downloadsOutputUri = File(path).toUri()
-                        askPassword(getString(R.string.encrypt_password))
-                    }
-
-                    ActivityCompat.shouldShowRequestPermissionRationale(
-                        this,
-                        WRITE_EXTERNAL_STORAGE
-                    ) -> {
-                        layout.showSnackBar(
-                            binding.root,
-                            getString(R.string.no_backup),
-                            Snackbar.LENGTH_INDEFINITE,
-                            getString(R.string.ok)
-                        ) {
-                            requestPermissionLauncher.launch(WRITE_EXTERNAL_STORAGE)
-                        }
-                    }
-
-                    else -> {
-                        requestPermissionLauncher.launch(WRITE_EXTERNAL_STORAGE)
-                    }
-                }
-            }
-
-            R.id.restore -> {
-                when {
-                    Build.VERSION.SDK_INT >= 29 ->
-                        pickupFileFromDownloads("restore")
-
-                    ContextCompat.checkSelfPermission(
-                        this,
-                        READ_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED -> {
-                        Log.d(TAG, "Read External Storage permission granted")
-                        val path = Utils.downloadsPath("baresip.bs")
-                        downloadsInputUri = File(path).toUri()
-                        askPassword(getString(R.string.decrypt_password))
-                    }
-
-                    ActivityCompat.shouldShowRequestPermissionRationale(
-                        this,
-                        READ_EXTERNAL_STORAGE
-                    ) -> {
-                        layout.showSnackBar(
-                            binding.root,
-                            getString(R.string.no_restore),
-                            Snackbar.LENGTH_INDEFINITE,
-                            getString(R.string.ok)
-                        ) {
-                            requestPermissionLauncher.launch(READ_EXTERNAL_STORAGE)
-                        }
-                    }
-
-                    else -> {
-                        requestPermissionLauncher.launch(READ_EXTERNAL_STORAGE)
-                    }
-                }
-            }
-
-            R.id.restart, R.id.quit -> {
-                quitRestart(item.itemId == R.id.restart)
-            }
-        }
-        return true
-    }
-
-    @RequiresApi(29)
-    private fun pickupFileFromDownloads(action: String) {
-        when (action) {
-            "backup" -> {
-                backupRequest.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/octet-stream"
-                    putExtra(Intent.EXTRA_TITLE, "baresip.bs")
-                    putExtra(
-                        DocumentsContract.EXTRA_INITIAL_URI,
-                        MediaStore.Downloads.EXTERNAL_CONTENT_URI
-                    )
-                })
-            }
-
-            "restore" -> {
-                restoreRequest.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "application/octet-stream"
-                    putExtra(
-                        DocumentsContract.EXTRA_INITIAL_URI,
-                        MediaStore.Downloads.EXTERNAL_CONTENT_URI
-                    )
-                })
-            }
-        }
     }
 
     private fun quitRestart(reStart: Boolean) {
