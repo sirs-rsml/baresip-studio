@@ -282,112 +282,12 @@
         android:id="@+id/onHoldNotice"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/buttons"
+        android:layout_alignParentBottom="true"
         android:gravity="center"
         android:visibility="gone"
         android:textSize="18sp"
         android:textColor="@color/colorAccent"
         android:text="@string/call_is_on_hold" >
     </TextView>
-
-    <LinearLayout
-        android:id="@+id/buttons"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:layout_alignParentBottom="true" >
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" >
-        </Space>
-
-        <ImageButton
-            android:id="@+id/voicemailButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:gravity="center_horizontal|center_vertical"
-            android:src="@drawable/voicemail"
-            android:visibility="gone"
-            android:contentDescription="@string/voicemail" >
-        </ImageButton>
-
-        <Space
-            android:id="@+id/voicemailButtonSpace"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1"
-            android:visibility="gone" >
-        </Space>
-
-        <ImageButton
-            android:id="@+id/contactsButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:gravity="center_horizontal|center_vertical"
-            android:src="@drawable/contacts"
-            android:contentDescription="@string/contacts" >
-        </ImageButton>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" >
-        </Space>
-
-        <ImageButton
-            android:id="@+id/messagesButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:gravity="center_horizontal|center_vertical"
-            android:src="@drawable/messages"
-            android:contentDescription="@string/messages" >
-        </ImageButton>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" >
-        </Space>
-
-        <ImageButton
-            android:id="@+id/callsButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:gravity="center_horizontal|center_vertical"
-            android:src="@drawable/calls"
-            android:contentDescription="@string/call_history" >
-        </ImageButton>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" >
-        </Space>
-
-        <ImageButton
-            android:id="@+id/dialpadButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            android:gravity="center_horizontal|center_vertical"
-            android:src="@drawable/dialpad_off"
-            android:contentDescription="@string/dialpad" >
-        </ImageButton>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" >
-        </Space>
-
-    </LinearLayout>
 
 </RelativeLayout>
