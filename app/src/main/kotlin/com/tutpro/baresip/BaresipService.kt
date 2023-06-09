@@ -496,32 +496,6 @@ class BaresipService: Service() {
                 nm.cancel(TRANSFER_NOTIFICATION_ID)
             }
 
-            "Message Save" -> {
-                val uap = intent!!.getLongExtra("uap", 0L)
-                val ua = UserAgent.ofUap(uap)
-                if (ua == null)
-                    Log.w(TAG, "onStartCommand did not find UA $uap")
-                else
-                    ChatsActivity.saveUaMessage(
-                        ua.account.aor,
-                        intent.getStringExtra("time")!!.toLong()
-                    )
-                nm.cancel(MESSAGE_NOTIFICATION_ID)
-            }
-
-            "Message Delete" -> {
-                val uap = intent!!.getLongExtra("uap", 0L)
-                val ua = UserAgent.ofUap(uap)
-                if (ua == null)
-                    Log.w(TAG, "onStartCommand did not find UA $uap")
-                else
-                    ChatsActivity.deleteUaMessage(
-                        ua.account.aor,
-                        intent.getStringExtra("time")!!.toLong()
-                    )
-                nm.cancel(MESSAGE_NOTIFICATION_ID)
-            }
-
             "Update Notification" -> {
                 updateStatusNotification()
             }

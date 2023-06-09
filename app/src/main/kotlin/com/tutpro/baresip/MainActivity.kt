@@ -465,46 +465,14 @@ class MainActivity : AppCompatActivity() {
                     Contact.contactNames()))
             }
 
-        contactsButton.setOnClickListener {
-            val i = Intent(this@MainActivity, ContactsActivity::class.java)
-            val b = Bundle()
-            if (aorSpinner.selectedItemPosition >= 0)
-                b.putString("aor", aorSpinner.tag.toString())
-            else
-                b.putString("aor", "")
-            i.putExtras(b)
-            contactsRequest.launch(i)
-        }
-
         chatRequests = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             spinToAor(activityAor)
             updateIcons(Account.ofAor(activityAor)!!)
         }
 
-        messagesButton.setOnClickListener {
-            if (aorSpinner.selectedItemPosition >= 0) {
-                val i = Intent(this@MainActivity, ChatsActivity::class.java)
-                val b = Bundle()
-                b.putString("aor", aorSpinner.tag.toString())
-                b.putString("peer", resumeUri)
-                i.putExtras(b)
-                chatRequests.launch(i)
-            }
-        }
-
         callsRequest = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             spinToAor(activityAor)
             callsButton.setImageResource(R.drawable.calls)
-        }
-
-        callsButton.setOnClickListener {
-            if (aorSpinner.selectedItemPosition >= 0) {
-                val i = Intent(this@MainActivity, CallsActivity::class.java)
-                val b = Bundle()
-                b.putString("aor", aorSpinner.tag.toString())
-                i.putExtras(b)
-                callsRequest.launch(i)
-            }
         }
 
         dialpadButton.tag = "off"
@@ -1166,16 +1134,6 @@ class MainActivity : AppCompatActivity() {
                 if (kgm.isDeviceLocked)
                     Utils.setShowWhenLocked(this, false)
             }
-            "message", "message show", "message reply" -> {
-                val i = Intent(applicationContext, ChatActivity::class.java)
-                i.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                val b = Bundle()
-                b.putString("aor", aor)
-                b.putString("peer", params[1] as String)
-                b.putBoolean("focus", ev[0] == "message reply")
-                i.putExtras(b)
-                chatRequests.launch(i)
-            }
             "mwi notify" -> {
                 val lines = ev[1].split("\n")
                 for (line in lines) {
@@ -1286,10 +1244,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            R.id.config -> {
-                configRequest.launch(Intent(this, ConfigActivity::class.java))
-            }
-
             R.id.backup -> {
                 when {
                     Build.VERSION.SDK_INT >= 29 -> pickupFileFromDownloads("backup")
@@ -1349,10 +1303,6 @@ class MainActivity : AppCompatActivity() {
                         requestPermissionLauncher.launch(READ_EXTERNAL_STORAGE)
                     }
                 }
-            }
-
-            R.id.about -> {
-                startActivity(Intent(this, AboutActivity::class.java))
             }
 
             R.id.restart, R.id.quit -> {
@@ -2049,75 +1999,8 @@ class MainActivity : AppCompatActivity() {
                 if (!Call.inCall() && (BaresipService.activities.size > 1))
                     restoreActivities()
             }
-            "config" -> {
-                configRequest.launch(Intent(this, ConfigActivity::class.java))
-            }
             "audio" -> {
                 startActivity(Intent(this, AudioActivity::class.java))
-            }
-            "codecs" -> {
-                val i = Intent(this, CodecsActivity::class.java)
-                val b = Bundle()
-                b.putString("aor", activity[1])
-                b.putString("media", activity[2])
-                i.putExtras(b)
-                startActivity(i)
-            }
-            "about" -> {
-                startActivity(Intent(this, AboutActivity::class.java))
-            }
-            "contacts" -> {
-                val i = Intent(this, ContactsActivity::class.java)
-                val b = Bundle()
-                b.putString("aor", activity[1])
-                i.putExtras(b)
-                contactsRequest.launch(i)
-
-            }
-            "contact" -> {
-                val i = Intent(this, ContactActivity::class.java)
-                val b = Bundle()
-                if (activity[1] == "true") {
-                    b.putBoolean("new", true)
-                    b.putString("uri", activity[2])
-                } else {
-                    b.putBoolean("new", false)
-                    b.putInt("index", activity[2].toInt())
-                }
-                i.putExtras(b)
-                startActivity(i)
-            }
-            "chats" -> {
-                val i = Intent(this, ChatsActivity::class.java)
-                val b = Bundle()
-                b.putString("aor", activity[1])
-                i.putExtras(b)
-                chatRequests.launch(i)
-            }
-            "chat" -> {
-                val i = Intent(this, ChatActivity::class.java)
-                val b = Bundle()
-                b.putString("aor", activity[1])
-                b.putString("peer", activity[2])
-                b.putBoolean("focus", activity[3] == "true")
-                i.putExtras(b)
-                chatRequests.launch(i)
-            }
-            "calls" -> {
-                val i = Intent(this, CallsActivity::class.java)
-                val b = Bundle()
-                b.putString("aor", activity[1])
-                i.putExtras(b)
-                callsRequest.launch(i)
-            }
-            "call_details" -> {
-                val i = Intent(this, CallDetailsActivity::class.java)
-                val b = Bundle()
-                b.putString("aor", activity[1])
-                b.putString("peer", activity[2])
-                b.putInt("position", activity[3].toInt())
-                i.putExtras(b)
-                callsRequest.launch(i)
             }
         }
         return
