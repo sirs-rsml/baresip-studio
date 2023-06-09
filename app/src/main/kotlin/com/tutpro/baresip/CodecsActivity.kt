@@ -177,9 +177,6 @@ class CodecsActivity : AppCompatActivity() {
                         }
                     }
 
-                if (save)
-                    AccountsActivity.saveAccounts()
-
                 BaresipService.activities.remove("codecs,$aor,$media")
                 finish()
                 return true

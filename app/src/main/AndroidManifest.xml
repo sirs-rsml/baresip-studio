@@ -72,19 +72,6 @@
         </activity>
 
         <activity
-            android:name=".AccountsActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/accounts"
-            android:parentActivityName=".MainActivity" >
-        </activity>
-
-        <activity
-            android:name=".AccountActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/account" >
-        </activity>
-
-        <activity
             android:name=".CodecsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/codecs"

@@ -165,14 +165,6 @@ class AudioActivity : AppCompatActivity() {
                         Config.addVariable("module", "${module}.so")
                         save = true
                     }
-                    if (!box.isChecked && oldAudioModules[module]!!) {
-                        Api.module_unload("${module}.so")
-                        Config.removeVariableValue("module", "${module}.so")
-                        for (ua in BaresipService.uas)
-                            ua.account.removeAudioCodecs(module)
-                        AccountsActivity.saveAccounts()
-                        save = true
-                    }
                     id++
                 }
 

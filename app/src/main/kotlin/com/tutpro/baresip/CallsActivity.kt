@@ -206,7 +206,6 @@ class CallsActivity : AppCompatActivity() {
             R.id.history_on_off -> {
                 account.callHistory = !account.callHistory
                 invalidateOptionsMenu()
-                AccountsActivity.saveAccounts()
                 return true
             }
 

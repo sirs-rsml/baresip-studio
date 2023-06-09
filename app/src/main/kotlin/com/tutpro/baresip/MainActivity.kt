@@ -253,54 +253,6 @@ class MainActivity : AppCompatActivity() {
                     askPassword(getString(R.string.authentication_password), ua)
         }
 
-        aorSpinner.setOnTouchListener { view, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                if (aorSpinner.selectedItemPosition == -1) {
-                    val i = Intent(this@MainActivity, AccountsActivity::class.java)
-                    val b = Bundle()
-                    b.putString("aor", "")
-                    i.putExtras(b)
-                    accountsRequest.launch(i)
-                    true
-                } else {
-                    if ((event.x - view.left) < 100) {
-                        val i = Intent(this@MainActivity, AccountActivity::class.java)
-                        val b = Bundle()
-                        b.putString("aor", aorSpinner.tag.toString())
-                        i.putExtras(b)
-                        accountRequest!!.launch(i)
-                        true
-                    } else {
-                        BaresipService.uas[aorSpinner.selectedItemPosition].account.resumeUri =
-                                callUri.text.toString()
-                        false
-                    }
-                }
-            } else {
-                // view.performClick()
-                false
-            }
-        }
-
-        aorSpinner.setOnLongClickListener {
-            if (aorSpinner.selectedItemPosition != -1) {
-                val ua = UserAgent.ofAor(aorSpinner.tag.toString())
-                if (ua != null) {
-                    val acc = ua.account
-                    if (Api.account_regint(acc.accp) > 0) {
-                        Api.account_set_regint(acc.accp, 0)
-                        Api.ua_unregister(ua.uap)
-                    } else {
-                        Api.account_set_regint(acc.accp, acc.configuredRegInt)
-                        Api.ua_register(ua.uap)
-                    }
-                    acc.regint = Api.account_regint(acc.accp)
-                    AccountsActivity.saveAccounts()
-                }
-            }
-            true
-        }
-
         callUri.setAdapter(ArrayAdapter(this, android.R.layout.select_dialog_item,
                 Contact.contactNames()))
         callUri.threshold = 2
@@ -1338,14 +1290,6 @@ class MainActivity : AppCompatActivity() {
                 configRequest.launch(Intent(this, ConfigActivity::class.java))
             }
 
-            R.id.accounts -> {
-                val i = Intent(this, AccountsActivity::class.java)
-                val b = Bundle()
-                b.putString("aor", aorSpinner.tag.toString())
-                i.putExtras(b)
-                accountsRequest.launch(i)
-            }
-
             R.id.backup -> {
                 when {
                     Build.VERSION.SDK_INT >= 29 -> pickupFileFromDownloads("backup")
@@ -2110,20 +2054,6 @@ class MainActivity : AppCompatActivity() {
             }
             "audio" -> {
                 startActivity(Intent(this, AudioActivity::class.java))
-            }
-            "accounts" -> {
-                val i = Intent(this, AccountsActivity::class.java)
-                val b = Bundle()
-                b.putString("aor", activity[1])
-                i.putExtras(b)
-                accountsRequest.launch(i)
-            }
-            "account" -> {
-                val i = Intent(this, AccountActivity::class.java)
-                val b = Bundle()
-                b.putString("aor", activity[1])
-                i.putExtras(b)
-                accountsRequest.launch(i)
             }
             "codecs" -> {
                 val i = Intent(this, CodecsActivity::class.java)
